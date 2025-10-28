@@ -1,0 +1,335 @@
+/**
+ * @license AGPL-3.0
+ * Blooket Cheats
+ * Copyright (C) 2023-present 05Konz
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Source: https://github.com/Blooket-Council/Blooket-Cheats 05konz994@gmail.com
+*/
+
+/* THE UPDATE CHECKER IS ADDED DURING COMMIT PREP, THERE MAY BE REDUNDANT CODE, DO NOT TOUCH */
+
+(() => {
+    // Create Ifym GUI with white and black theme - Works on any website
+    const createIfymGUI = () => {
+        // Remove existing GUI if present
+        const existingGUI = document.getElementById('ifym-gui');
+        if (existingGUI) {
+            existingGUI.remove();
+        }
+
+        // Create main container
+        const guiContainer = document.createElement('div');
+        guiContainer.id = 'ifym-gui';
+        guiContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: #000000;
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            z-index: 99999;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            resize: both;
+            overflow: hidden;
+            min-width: 300px;
+            min-height: 200px;
+        `;
+
+        // Create draggable header
+        const header = document.createElement('div');
+        header.style.cssText = `
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            padding: 15px;
+            border-radius: 13px 13px 0 0;
+            border-bottom: 1px solid #ffffff;
+            text-align: center;
+            cursor: move;
+            user-select: none;
+        `;
+        
+        const title = document.createElement('h2');
+        title.textContent = 'Ifym';
+        title.style.cssText = `
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        `;
+        
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        closeBtn.onmouseover = () => closeBtn.style.background = '#ff4444';
+        closeBtn.onmouseout = () => closeBtn.style.background = 'none';
+        closeBtn.onclick = () => guiContainer.remove();
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        guiContainer.appendChild(header);
+
+        // Create content area
+        const content = document.createElement('div');
+        content.style.cssText = `
+            padding: 20px;
+            background: #111111;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        `;
+
+        // Website info section
+        const websiteInfo = document.createElement('div');
+        websiteInfo.innerHTML = `
+            <div style="margin-bottom: 20px; padding: 10px; background: #222222; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0; color: #ffffff;">Current Website</h4>
+                <p style="margin: 0; color: #cccccc; font-size: 12px;">${window.location.hostname}</p>
+            </div>
+        `;
+        content.appendChild(websiteInfo);
+
+        // Tools section
+        const toolsSection = document.createElement('div');
+        toolsSection.innerHTML = `
+            <h3 style="color: #ffffff; margin-top: 0; border-bottom: 1px solid #ffffff; padding-bottom: 10px;">Quick Tools</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <button onclick="ifymTools.toggleDarkMode()" style="background: #000000; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Dark Mode</button>
+                <button onclick="ifymTools.removeOverlays()" style="background: #000000; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Remove Popups</button>
+                <button onclick="ifymTools.hideImages()" style="background: #000000; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Hide Images</button>
+                <button onclick="ifymTools.zoomPage()" style="background: #000000; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Zoom +</button>
+            </div>
+        `;
+        content.appendChild(toolsSection);
+
+        // Themes section
+        const themesSection = document.createElement('div');
+        themesSection.innerHTML = `
+            <h3 style="color: #ffffff; margin-top: 0; border-bottom: 1px solid #ffffff; padding-bottom: 10px;">Themes</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="ifymTools.switchTheme('default')" style="background: #000000; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Default</button>
+                <button onclick="ifymTools.switchTheme('dark')" style="background: #111111; color: #ffffff; border: 1px solid #ffffff; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Dark</button>
+                <button onclick="ifymTools.switchTheme('light')" style="background: #ffffff; color: #000000; border: 1px solid #000000; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Light</button>
+                <button onclick="ifymTools.switchTheme('matrix')" style="background: #000000; color: #00ff00; border: 1px solid #00ff00; padding: 10px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">Matrix</button>
+            </div>
+        `;
+        content.appendChild(themesSection);
+
+        // Status section
+        const statusSection = document.createElement('div');
+        statusSection.innerHTML = `
+            <div style="margin-top: 20px; padding: 10px; background: #222222; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0; color: #ffffff;">Status</h4>
+                <p style="margin: 0; color: #00ff00; font-size: 12px;">Ifym Active - Ready to use</p>
+            </div>
+        `;
+        content.appendChild(statusSection);
+
+        guiContainer.appendChild(content);
+
+        // Create particles container
+        const particlesContainer = document.createElement('div');
+        particlesContainer.id = 'ifym-particles';
+        particlesContainer.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border-radius: 13px;
+            overflow: hidden;
+            z-index: -1;
+        `;
+        guiContainer.appendChild(particlesContainer);
+
+        document.body.appendChild(guiContainer);
+
+        // Create particles
+        createParticles();
+        
+        // Make draggable
+        makeDraggable(guiContainer, header);
+    };
+
+    // Create particle effect
+    const createParticles = () => {
+        const container = document.getElementById('ifym-particles');
+        if (!container) return;
+        
+        const particleCount = 25;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: #ffffff;
+                border-radius: 50%;
+                animation: ifymFloat ${3 + Math.random() * 2}s infinite ease-in-out;
+                animation-delay: ${Math.random() * 3}s;
+                opacity: ${Math.random() * 0.5 + 0.2};
+            `;
+            
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            
+            container.appendChild(particle);
+        }
+
+        // Add floating animation
+        if (!document.getElementById('ifym-styles')) {
+            const style = document.createElement('style');
+            style.id = 'ifym-styles';
+            style.textContent = `
+                @keyframes ifymFloat {
+                    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+                    25% { transform: translate(${Math.random() * 15 - 7.5}px, ${Math.random() * 15 - 7.5}px) scale(1.2); }
+                    50% { transform: translate(${Math.random() * 15 - 7.5}px, ${Math.random() * 15 - 7.5}px) scale(0.8); }
+                    75% { transform: translate(${Math.random() * 15 - 7.5}px, ${Math.random() * 15 - 7.5}px) scale(1.1); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    };
+
+    // Make GUI draggable
+    const makeDraggable = (element, handle) => {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        
+        handle.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+            element.style.right = "auto";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    };
+
+    // Ifym Tools functionality
+    window.ifymTools = {
+        toggleDarkMode: () => {
+            document.body.style.filter = document.body.style.filter === 'invert(1) hue-rotate(180deg)' ? 'none' : 'invert(1) hue-rotate(180deg)';
+        },
+        
+        removeOverlays: () => {
+            const overlays = document.querySelectorAll('[class*="overlay"], [class*="popup"], [class*="modal"], .lightbox, [role="dialog"]');
+            overlays.forEach(overlay => {
+                overlay.style.display = 'none';
+            });
+            alert('Overlays removed!');
+        },
+        
+        hideImages: () => {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.style.display = img.style.display === 'none' ? '' : 'none';
+            });
+        },
+        
+        zoomPage: () => {
+            const currentZoom = parseFloat(document.body.style.zoom) || 1;
+            document.body.style.zoom = (currentZoom + 0.1).toString();
+        },
+        
+        switchTheme: (theme) => {
+            const gui = document.getElementById('ifym-gui');
+            if (!gui) return;
+            
+            switch(theme) {
+                case 'dark':
+                    gui.style.background = '#111111';
+                    gui.style.borderColor = '#333333';
+                    break;
+                case 'light':
+                    gui.style.background = '#ffffff';
+                    gui.style.borderColor = '#000000';
+                    gui.style.color = '#000000';
+                    break;
+                case 'matrix':
+                    gui.style.background = '#000000';
+                    gui.style.borderColor = '#00ff00';
+                    gui.style.color = '#00ff00';
+                    break;
+                default:
+                    gui.style.background = '#000000';
+                    gui.style.borderColor = '#ffffff';
+                    gui.style.color = '#ffffff';
+            }
+        },
+        
+        toggleGUI: () => {
+            const gui = document.getElementById('ifym-gui');
+            if (gui) {
+                gui.remove();
+            } else {
+                createIfymGUI();
+            }
+        }
+    };
+
+    // Initialize Ifym GUI
+    createIfymGUI();
+
+    // Add toggle shortcut (Ctrl+Shift+I)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+            e.preventDefault();
+            window.ifymTools.toggleGUI();
+        }
+    });
+
+    console.log('Ifym GUI loaded! Press Ctrl+Shift+I to toggle.');
+
+})();
